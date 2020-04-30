@@ -26,6 +26,9 @@ echo <<<EOD
     <li>---</li>
     <li><a href="csc-api-base.php?api=items&spec=History">API (History)</a></li>
     <li><a href="csc-api-base.php?api=items&spec=History&id=10884">API (History-item)</a></li>
+    <li>---</li>
+    <li><a href="csc-api-base.php?api=brands">API (Brands)</a></li>
+    <li><a href="csc-api-base.php?api=brands&id=2">API (Brand-Archive)</a></li>
     </ul>
 EOD;
 

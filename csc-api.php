@@ -74,7 +74,7 @@ if($_REQUEST['api'] === 'items'){
     $sqlWhere = "";
     $sqlGroup = " GROUP BY catalogue.id,catalogue.name";
     $sqlOrder = " ORDER BY catalogue.upload_date DESC";
-    $qLimit = " LIMIT 300";
+    $qLimit = " LIMIT 500";
     if(isset($_REQUEST['limit'])) {
         $qLimit = " LIMIT ".$_REQUEST['limit'];        
     }
@@ -90,6 +90,10 @@ if($_REQUEST['api'] === 'items'){
         $sqlSelect .= $sqlSelectCommonStock;
         // $sqlSelect .= $sqlSelectCommonExcerpt; 
         $sqlWhere .= " AND catalogue.category=2 AND catalogue.status=2";
+
+        if(isset($_REQUEST['brand'])){
+            $sqlWhere .= " AND catalogue.subcategory=".$_REQUEST['brand'];
+        }
     }
     if($_REQUEST['spec'] === 'Press') {
         $isStockPage = false;

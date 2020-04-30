@@ -19,7 +19,11 @@ if(!isset($_REQUEST['api'])){
         $printDebug = true;
     }
     header('Content-Type: application/json');
-    include("csc-api.php");
+    if($_REQUEST['api'] === "brands"){
+        include("csc-api-brands.php");
+    }else{
+        include("csc-api.php");
+    }
 }
 
 ?>

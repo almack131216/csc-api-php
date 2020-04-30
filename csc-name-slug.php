@@ -9,6 +9,8 @@
 // SELECT * FROM `catalogue` WHERE name LIKE '%£%' ORDER BY `catalogue`.`id` ASC
 // 7394
 
+// UPDATE catalogue_subcats - id 79 (Clénet)
+
 
 $disabled = true;
 if($disabled){
