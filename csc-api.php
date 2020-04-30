@@ -31,50 +31,25 @@ function returnSqlInnerJoinBrands(){
     return $ret;
 }
 
-function rep_tagchars( $text ) {
-    // DESCRIPTION: remove < and >
-    $pattern = array (	"|[&]|",
-                        "|[>]|",
-                        "|[<]|",
-                        "|[\']|",
-                        "|[\`]|",
-                        "|[\Â]|" );
+function removeBadChars( $text ) {
+    $text = utf8_encode($text);
+    $pattern = array (	"/&nbsp;/",
+                        "/&pound;/",
+                        "/&#39;/",
+                        "/&rsquo;/",
+                        "/&ldquo;/",
+                        "/&amp;/",
+                        "/Â/" );
     
-    $replace = array (	"&amp;", 
-                        "&gt;",
-                        "&lt;",
-                        "\'",
-                        "&lsquo;",
-                    "___" );
+    $replace = array (	" ",
+                        "£",
+                        "'",
+                        "'",
+                        "\"",
+                        "&",
+                        "" );
                     
     return preg_replace( $pattern, $replace, $text );
-}
-
-function removeHtmlChars($getString){
-    $getString = str_replace('&nbsp;'," ",$getString);//space char 
-    $getString = str_replace('&pound;','£',$getString);//£
-    $getString = str_replace('&#39;',"'",$getString);//'
-    $getString = str_replace('â€™',"'",$getString);//'
-    $getString = str_replace('’',"'",$getString);//'
-    $getString = str_replace('\’',"'",$getString);//'
-    // $getString = str_replace('-',"-",$getString);//'
-    // $getString = str_replace("£","&pound;",$getString);//'
-    // $getString = str_replace("\xc2\xa0", '', $getString);
-    // $getString = str_replace("Â&pound;", '____', $getString);
-
-    // $patterns = array( "/</", "/>/", "/'/", "/’/", "/Â/" );
-	// 		$replaces = array( "<", ">", "\'", "\'", "___" );
-    //         $getString = preg_replace( $patterns, $replaces, $getString );
-
-            // $getString = preg_replace('/Â/', 'a', $getString);
-            // $getString = rep_tagchars($getString);      
-            $getString = utf8_encode($getString);
-            $getString = preg_replace('/Â/', '', $getString);
-            
-    // $row['name'] = 'xxxx';//$itemName;
-
-    // "’","'"    
-    return $getString;
 }
 
 // Now, let's fetch five random items and output their names to a list.
@@ -215,8 +190,8 @@ if($sql){
         // $dbdata[]=$row;
         $row['id'] = intval($row['id']);
         // $row['name'] = htmlspecialchars($row['name']);//£        
-        // $row['name'] = removeHtmlChars($row['name']);
-        $row['name'] = removeHtmlChars($row['name']);
+        // $row['name'] = removeBadChars($row['name']);
+        $row['name'] = removeBadChars($row['name']);
         // echo '<br>POUND ???: '.$itemName;
         // echo '<br>'.$itemName;
 
@@ -229,14 +204,15 @@ if($sql){
         }
         if($isItemListPage){
             $tmpExcerpt = strip_tags($row['excerpt']);
-            // $tmpExcerpt = removeHtmlChars($tmpExcerpt);
+            $tmpExcerpt = removeBadChars($tmpExcerpt);
             // $tmpExcerpt = str_replace('&nbsp;'," ",$tmpExcerpt);//space char            
             $row['excerpt'] = implode(' ', array_slice(explode(' ', $tmpExcerpt), 0, 30));
         }        
         
         if(!$isItemListPage && isset($row['description'])){
             // REF: https://www.w3resource.com/php/function-reference/addcslashes.php
-            $row['description'] = addcslashes($row['description'],'"');
+            $description = removeBadChars($row['description']);
+            $row['description'] = addcslashes($description,'"');
         }
 
         $row['catalogue_subcat'] = array();
@@ -264,10 +240,8 @@ if($sql){
                 //Fetch into associative array
                 while ( $row = $result->fetch_assoc())  {
                     $tmpCount = $tmpCount + 1;
-                    // $dbdata[]=$row;
                     $row['id'] = intval($row['id']);
-                    $row['name'] = htmlspecialchars($row['name']);//£
-                    $row['name'] = removeHtmlChars($row['name']);    
+                    $row['name'] = removeBadChars($row['name']);    
                     if(!$row['name']) $row['name'] = $itemName;
                     $dbdata[]=$row;
                     $debug .= '<br>'.$tmpCount.' > '.$row['id'].' | '.$row['name'].' | ';

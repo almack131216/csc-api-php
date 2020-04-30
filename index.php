@@ -21,6 +21,9 @@ echo <<<EOD
     <li><a href="csc-api-base.php?api=items&spec=Testimonials">API (Testimonials)</a></li>
     <li><a href="csc-api-base.php?api=items&spec=Testimonials&id=37367">API (Testimonials-item)</a></li>
     <li>---</li>
+    <li><a href="csc-api-base.php?api=items&spec=News">API (News)</a></li>
+    <li><a href="csc-api-base.php?api=items&spec=News&id=39842">API (News-item)</a></li>
+    <li>---</li>
     <li><a href="csc-api-base.php?api=items&spec=History">API (History)</a></li>
     <li><a href="csc-api-base.php?api=items&spec=History&id=10884">API (History-item)</a></li>
     </ul>
