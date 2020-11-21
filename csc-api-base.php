@@ -13,6 +13,7 @@ include("db.php");
 if(!isset($_REQUEST['api'])){
     if(isset($_REQUEST['items'])) include("csc-name-slug.php");
     if(isset($_REQUEST['brands'])) include("csc-brands-slug.php");
+    if(isset($_REQUEST['related'])) include("csc-related.php");
 }else{
     $printDebug = false;
     if(isset($_REQUEST['debug']) && $_REQUEST['debug'] = true){

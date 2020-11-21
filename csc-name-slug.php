@@ -1,9 +1,16 @@
 <?php
 
+// PROBLEM ITEMS (dodgy chars @...)
+// 47515 - 'Works Specification'
+
+// 2do - run batch scripts on phpyadmin SQL
 // UPDATE catalogue SET name=REPLACE(name,"’","'")
 // SELECT * FROM `catalogue` WHERE name LIKE '%’%' ORDER BY `catalogue`.`id` ASC
 // (10892,10893,10894),10941,27791
 
+// UPDATE catalogue SET name=REPLACE(name,'â€”','–')
+// UPDATE catalogue SET name=REPLACE(name,'â€“','–')
+// UPDATE catalogue SET name=REPLACE(name,'–','-')
 
 // UPDATE catalogue SET name=REPLACE(name,"£","&pound;")
 // SELECT * FROM `catalogue` WHERE name LIKE '%£%' ORDER BY `catalogue`.`id` ASC

@@ -39,7 +39,8 @@ function removeBadChars( $text ) {
                         "/&rsquo;/",
                         "/&ldquo;/",
                         "/&amp;/",
-                        "/Â/" );
+                        "/Â/",
+                        "/â/" );
     
     $replace = array (	" ",
                         "£",
@@ -47,7 +48,8 @@ function removeBadChars( $text ) {
                         "'",
                         "\"",
                         "&",
-                        "" );
+                        "",
+                        "'" );
                     
     return preg_replace( $pattern, $replace, $text );
 }
@@ -70,7 +72,7 @@ if($_REQUEST['api'] === 'items'){
     $sqlSelect = "";
     $sqlSelectCommonStock = ",catalogue.subcategory AS brand,catalogue.detail_1 AS year";
     $sqlSelectCommonPrice = ",catalogue.price,catalogue.price_details";
-    $sqlSelectCommonExcerpt = ",catalogue.description AS excerpt";
+    $sqlSelectCommonExcerpt = ",catalogue.detail_6 AS excerpt,catalogue.description AS brief";
     $sqlWhere = "";
     $sqlGroup = " GROUP BY catalogue.id,catalogue.name";
     $sqlOrder = " ORDER BY catalogue.upload_date DESC";
@@ -89,10 +91,15 @@ if($_REQUEST['api'] === 'items'){
         $isStockPage = true;
         $sqlSelect .= $sqlSelectCommonStock;
         // $sqlSelect .= $sqlSelectCommonExcerpt; 
-        $sqlWhere .= " AND catalogue.category=2 AND catalogue.status=2";
+        $sqlWhere .= " AND catalogue.category=2 AND catalogue.status=2";        
 
-        if(isset($_REQUEST['brand'])){
-            $sqlWhere .= " AND catalogue.subcategory=".$_REQUEST['brand'];
+        if(isset($_REQUEST['brandId'])){
+            $sqlWhere .= " AND catalogue.subcategory=".$_REQUEST['brandId'];
+        }
+        if(isset($_REQUEST['brandName'])){
+            $sqlWhere .= " AND catalogue_subcat.slug='".$_REQUEST['brandName']."'";
+        }else{
+            $sqlWhere .= " AND catalogue.upload_date >= '2020-01-01'";
         }
     }
     if($_REQUEST['spec'] === 'Press') {
@@ -102,7 +109,7 @@ if($_REQUEST['api'] === 'items'){
     }
     if($_REQUEST['spec'] === 'Testimonials') {
         $isStockPage = false;
-        $sqlSelect .= ",catalogue.detail_2 AS source";
+        $sqlSelect .= ",catalogue.detail_2 AS related";
         $sqlWhere .= " AND catalogue.category=3 AND catalogue.status=1";
     }
     if($_REQUEST['spec'] === 'News') {
@@ -115,6 +122,11 @@ if($_REQUEST['api'] === 'items'){
         $sqlSelect .= ",catalogue.detail_2 AS source";
         $sqlWhere .= " AND catalogue.category=10 AND catalogue.status=1";
     }
+    if($_REQUEST['spec'] === 'Restoration') {
+        $isStockPage = false;
+        // $sqlSelect .= ",catalogue.detail_2 AS source";
+        $sqlWhere .= " AND catalogue.category=11 AND catalogue.status=1";
+    }
     if($_REQUEST['spec'] === 'Homepage') {
         $sqlCust = "(SELECT";
         $sqlCust .= returnSqlCommonSelectItems();
@@ -122,7 +134,7 @@ if($_REQUEST['api'] === 'items'){
         $sqlCust .= returnSqlCommonSelectBrandArr();
         $sqlCust .= " FROM catalogue AS catalogue";
         $sqlCust .= returnSqlInnerJoinBrands();
-        $sqlCust .= " WHERE catalogue.category=3";
+        $sqlCust .= " WHERE catalogue.category=3 AND catalogue.status=1";
         $sqlCust .= " ORDER BY catalogue.upload_date DESC";
         $sqlCust .= " LIMIT 2";
         $sqlCust .= ") UNION (SELECT";
@@ -131,7 +143,7 @@ if($_REQUEST['api'] === 'items'){
         $sqlCust .= returnSqlCommonSelectBrandArr();
         $sqlCust .= " FROM catalogue AS catalogue";
         $sqlCust .= returnSqlInnerJoinBrands();
-        $sqlCust .= " WHERE catalogue.category=5";
+        $sqlCust .= " WHERE catalogue.category=5 AND catalogue.status=1";
         $sqlCust .= " ORDER BY catalogue.upload_date DESC";
         $sqlCust .= " LIMIT 2";
         $sqlCust .= ")";
@@ -140,7 +152,8 @@ if($_REQUEST['api'] === 'items'){
     if(isset($itemId)) {
         $sqlGroup = "";
         $isItemListPage = false;
-        $sqlSelect .= ",catalogue.detail_2 AS subtitle,catalogue.detail_6 AS brief";
+        if($_REQUEST['spec'] === 'ItemRelated') $isItemListPage = true;
+        $sqlSelect .= ",catalogue.detail_6 AS excerpt";
         $sqlSelect .= ",catalogue.description";
         $sqlWhere = " AND catalogue.id=".$itemId;
         // $sqlWhere .= " OR catalogue.id_xtra=".$itemId.")";
@@ -206,11 +219,14 @@ if($sql){
             $row['year'] = intval($row['year']);
             if(isset($row['price'])) $row['price'] = intval($row['price']);
         }
-        if($isItemListPage){
-            $tmpExcerpt = strip_tags($row['excerpt']);
+        if($isItemListPage && !$row['excerpt']){
+            $tmpExcerpt = strip_tags($row['brief']);
             $tmpExcerpt = removeBadChars($tmpExcerpt);
-            // $tmpExcerpt = str_replace('&nbsp;'," ",$tmpExcerpt);//space char            
             $row['excerpt'] = implode(' ', array_slice(explode(' ', $tmpExcerpt), 0, 30));
+        }
+        if($isItemListPage && $row['excerpt']){
+            $row['excerpt'] = removeBadChars($row['excerpt']);
+            $row['brief'] = '';
         }        
         
         if(!$isItemListPage && isset($row['description'])){
@@ -228,8 +244,9 @@ if($sql){
     }
 
     $ignore = false;
+    if($_REQUEST['spec'] === 'ItemRelated') $ignore = true;
     if(!$ignore && isset($itemId)){
-        $sql = "SELECT id, name, image_large AS image FROM catalogue WHERE id_xtra=$itemId";
+        $sql = "SELECT id, name, image_large AS image FROM catalogue WHERE id_xtra=$itemId AND image_large!=''";
         $sql .= " ORDER BY position_initem, id ASC";        
 
         if (!$result = $mysqli->query($sql)) {

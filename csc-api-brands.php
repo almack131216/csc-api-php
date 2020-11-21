@@ -1,7 +1,7 @@
 <?php
 $printDebug = false;
 
-$q = "SELECT csc.id,csc.subcategory AS brand, COUNT(c.id) as itemCount";
+$q = "SELECT csc.id,csc.subcategory AS brand,csc.slug, COUNT(c.id) as itemCount";
 $q .= " FROM catalogue_subcats AS csc";
 $q .= " LEFT JOIN catalogue AS c ON c.subcategory = csc.id";
 $q .= " WHERE c.status=2 AND c.category=2";
