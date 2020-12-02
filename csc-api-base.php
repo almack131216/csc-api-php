@@ -1,6 +1,5 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-include("header.php");
 
 function create_slug($string){
     $slug=preg_replace('/[^A-Za-z0-9-]+/', '-', $string);
@@ -29,5 +28,4 @@ if(!isset($_REQUEST['api'])){
     }
 }
 
-include("footer.php");
 ?>

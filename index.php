@@ -1,6 +1,5 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-include("header.php");
 
 echo <<<EOD
     <ul>
@@ -34,7 +33,4 @@ echo <<<EOD
     <li><a href="csc-api-base.php?api=items&spec=Archive&brandId=91">API (Brand-Archive)</a></li>
     </ul>
 EOD;
-
-include("footer.php");
-
 ?>

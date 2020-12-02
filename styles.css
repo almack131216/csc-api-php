@@ -19,6 +19,7 @@ table tr:nth-child(odd) td {
 
 table tr td.feedback span {
     display:block;
+    padding:3px;
 }
 
 table tr td.img img {
@@ -62,5 +63,4 @@ img.large {
 
 .info {
     background:lightblue;
-    padding:10px;
 }
