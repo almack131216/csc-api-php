@@ -1,4 +1,5 @@
 <?php
+//210217: Add YouTube API
 
 function getFriendlyURL($string) {
     setlocale(LC_CTYPE, 'en_US.UTF8');

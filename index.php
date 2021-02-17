@@ -7,7 +7,6 @@ echo <<<EOD
     <li><a href="csc-api-base.php?items=true&rename=true">item name tweak</a></li>
     <li><a href="csc-api-base.php?brands=true">bland slug generator</a></li>
     <li><a href="csc-api-base.php?related=true">RELATED: detail_2 -> related</a></li>
-    <li><a href="csc-api-base.php?paths=true">IMG PATH: images_catalogue -> images</a></li>
     <li>---</li>
     <li><a href="csc-api-base.php?api=items&spec=Homepage">API (Homepage)</a></li>
     <li>---</li>
@@ -28,6 +27,9 @@ echo <<<EOD
     <li>---</li>
     <li><a href="csc-api-base.php?api=items&spec=History">API (History)</a></li>
     <li><a href="csc-api-base.php?api=items&spec=History&id=10884">API (History-item)</a></li>
+    <li>---</li>
+    <li><a href="csc-api-base.php?api=items&spec=Videos">API (Videos)</a></li>
+    <li><a href="csc-api-base.php?api=items&spec=Videos&id=37367">API (Videos-item)</a></li>
     <li>---</li>
     <li><a href="csc-api-base.php?api=brands">API (Brands)</a></li>
     <li><a href="csc-api-base.php?api=items&spec=Archive&brandId=91">API (Brand-Archive)</a></li>
