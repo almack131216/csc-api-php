@@ -14,7 +14,7 @@ function returnSqlCommonSelectItems(){
     $ret = " catalogue.id,catalogue.status,catalogue.name,catalogue.slug";
     $ret .= ",catalogue.category";
     $ret .= ",catalogue.upload_date AS createdAt,catalogue.upload_date AS updatedAt";
-    $ret .= ",catalogue.image_large AS image";
+    $ret .= ",catalogue.image_large AS image,catalogue.image_dir AS imageDir,catalogue.image_hi AS imageHi";  
     return $ret;
 }
 
@@ -66,6 +66,12 @@ if($_REQUEST['api'] === 'brands'){
 if(isset($_REQUEST['id'])) {
     $itemId = $_REQUEST['id'];
 }
+if(isset($_REQUEST['ids'])) {
+    $itemIds = $_REQUEST['ids'];
+}
+if(isset($_REQUEST['preview'])) {
+    $preview = true;
+}
 if($_REQUEST['api'] === 'items'){
     $isStockPage = false;
     $isItemListPage = true;
@@ -85,7 +91,12 @@ if($_REQUEST['api'] === 'items'){
         $sqlSelect .= $sqlSelectCommonStock; 
         // $sqlSelect .= $sqlSelectCommonExcerpt;        
         $sqlSelect .= $sqlSelectCommonPrice;               
-        $sqlWhere .= " AND catalogue.category=2 AND catalogue.status=1";        
+        $sqlWhere .= " AND catalogue.category=2";
+		if($preview){
+			$sqlWhere .= " AND catalogue.status=0";
+		}else{
+			$sqlWhere .= " AND catalogue.status=1";
+		}  
     }
     if($_REQUEST['spec'] === 'Archive') {
         $isStockPage = true;
@@ -109,7 +120,7 @@ if($_REQUEST['api'] === 'items'){
     }
     if($_REQUEST['spec'] === 'Testimonials') {
         $isStockPage = false;
-        $sqlSelect .= ",catalogue.detail_2 AS related";
+        // $sqlSelect .= ",catalogue.detail_2 AS related";
         $sqlWhere .= " AND catalogue.category=3 AND catalogue.status=1";
     }
     if($_REQUEST['spec'] === 'News') {
@@ -149,13 +160,29 @@ if($_REQUEST['api'] === 'items'){
         $sqlCust .= ")";
     }
     
-    if(isset($itemId)) {
+    if(isset($itemId) || isset($itemIds)) {
         $sqlGroup = "";
         $isItemListPage = false;
         if($_REQUEST['spec'] === 'ItemRelated') $isItemListPage = true;
         $sqlSelect .= ",catalogue.detail_6 AS excerpt";
         $sqlSelect .= ",catalogue.description";
-        $sqlWhere = " AND catalogue.id=".$itemId;
+        $sqlSelect .= ",catalogue.related";
+        $sqlSelect .= ",catalogue.youtube";
+        // $sqlSelect .= ",(SELECT id FROM catalogue WHERE related IN('".$itemId."')) AS related2";
+        //if there are more than 1 related items (param: ids=1111,2222)
+        //else just show one (param: id=1111)
+        if(!$itemId && $itemIds){
+            $itemIdsArr = explode(",", $itemIds);
+            $sqlWhere = " AND (catalogue.id=".$itemIdsArr[0];
+            for($i=1;$i<count($itemIdsArr);$i++){
+                //if(is_numeric($itemIdsArr[$i])) 
+                $sqlWhere .= " OR catalogue.id=".$itemIdsArr[$i];
+            }
+            $sqlWhere .= ")";
+        }else{
+            $sqlWhere = " AND catalogue.id=".$itemId;
+        }
+        
         // $sqlWhere .= " OR catalogue.id_xtra=".$itemId.")";
     }else{
         $sqlSelect .= $sqlSelectCommonExcerpt;
